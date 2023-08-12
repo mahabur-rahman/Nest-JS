@@ -7,6 +7,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Book } from './schemas/book.schema';
 import * as mongoose from 'mongoose';
 import { Query } from 'express-serve-static-core';
+import { User } from 'src/auth/schemas/user.schema';
 
 @Injectable()
 export class BookService {
@@ -18,7 +19,7 @@ export class BookService {
 
   //   get all books
   async findAll(query: Query): Promise<Book[]> {
-    const resPerPage = 1;
+    const resPerPage = 2;
     const currentPage = Number(query.page) || 1;
     const skip = resPerPage * (currentPage - 1);
 
@@ -39,8 +40,9 @@ export class BookService {
   }
 
   //   create book
-  async addedBook(book: Book): Promise<Book> {
-    const res = await this.bookModel.create(book);
+  async addedBook(book: Book, user: User): Promise<Book> {
+    const data = Object.assign(book, { user: user._id });
+    const res = await this.bookModel.create(data);
     return res;
   }
 
